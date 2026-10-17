@@ -1,0 +1,18 @@
+CREATE TABLE public.html_questions (id text PRIMARY KEY, owner_id uuid NOT NULL, question text NOT NULL CHECK (length(trim(question)) > 0), options jsonb NOT NULL CHECK (jsonb_array_length(options) = 4), correct_answer integer NOT NULL CHECK (correct_answer BETWEEN 0 AND 3), explanation text NOT NULL CHECK (length(trim(explanation)) > 0), topic text NOT NULL CHECK (length(trim(topic)) > 0), difficulty text NOT NULL CHECK (difficulty IN ('Easy','Medium','Advanced')), source_name text NOT NULL, source_url text NOT NULL DEFAULT '', verification text NOT NULL DEFAULT 'manually-imported', normalized text NOT NULL, created_at timestamptz NOT NULL DEFAULT now(), UNIQUE(owner_id, normalized));
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.html_questions TO authenticated; GRANT ALL ON public.html_questions TO service_role;
+ALTER TABLE public.html_questions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY questions_owner ON public.html_questions FOR ALL TO authenticated USING (auth.uid() = owner_id) WITH CHECK (auth.uid() = owner_id);
+CREATE INDEX html_questions_owner_difficulty ON public.html_questions(owner_id,difficulty);
+CREATE TABLE public.html_attempts (id uuid PRIMARY KEY, owner_id uuid NOT NULL, payload jsonb NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT, INSERT, DELETE ON public.html_attempts TO authenticated; GRANT ALL ON public.html_attempts TO service_role;
+ALTER TABLE public.html_attempts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY attempts_owner_read ON public.html_attempts FOR SELECT TO authenticated USING (auth.uid() = owner_id);
+CREATE POLICY attempts_owner_insert ON public.html_attempts FOR INSERT TO authenticated WITH CHECK (auth.uid() = owner_id);
+CREATE POLICY attempts_owner_delete ON public.html_attempts FOR DELETE TO authenticated USING (auth.uid() = owner_id);
+CREATE INDEX html_attempts_owner ON public.html_attempts(owner_id,created_at);
+CREATE TABLE public.html_bookmarks (owner_id uuid NOT NULL, question_id text NOT NULL, PRIMARY KEY(owner_id,question_id));
+GRANT SELECT, INSERT, DELETE ON public.html_bookmarks TO authenticated; GRANT ALL ON public.html_bookmarks TO service_role;
+ALTER TABLE public.html_bookmarks ENABLE ROW LEVEL SECURITY;
+CREATE POLICY bookmarks_owner ON public.html_bookmarks FOR ALL TO authenticated USING (auth.uid() = owner_id) WITH CHECK (auth.uid() = owner_id);
+CREATE OR REPLACE FUNCTION public.enforce_html_target() RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$ BEGIN PERFORM pg_advisory_xact_lock(hashtext(NEW.owner_id::text)); IF (SELECT count(*) FROM public.html_questions WHERE owner_id = NEW.owner_id AND difficulty = NEW.difficulty AND id <> NEW.id) >= 500 THEN RAISE EXCEPTION 'Target reached: 500 questions per difficulty'; END IF; RETURN NEW; END $$;
+CREATE TRIGGER html_target BEFORE INSERT OR UPDATE ON public.html_questions FOR EACH ROW EXECUTE FUNCTION public.enforce_html_target();

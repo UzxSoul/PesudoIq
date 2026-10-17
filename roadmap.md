@@ -1,0 +1,14 @@
+# HTML Master Pro
+- [x] PDF-first upload, existing MCQ extraction and notes generation, live preview and validated confirmation
+- [x] Shared navigation, dashboard, responsive themes, preserved credit
+- [x] Validated bank and honest counts
+- [x] Quiz engine, timed exams, results and revision queues
+- [x] History, analytics, import/export and management
+- [x] AI generation interface and JSON fallback
+- [x] Fix PDF conversion returning 0 questions (answer keys, auto mode, auto difficulty)
+- [x] Stop repeated questions (stricter duplicate check, unseen-first sessions, cleanup tool)
+- [x] Admin-only panel: single admin account, email+password login, shared bank, server checks
+- [x] Better explanations (prompt + clear correct-answer display)
+- [x] Sidebar glitches (scroll, persisted collapse, mobile drawer)
+- [ ] Reach 500 validated questions per difficulty — ongoing via admin uploads
+- [ ] Decide whether the 356 older questions on skylordboss3@gmail.com move into the shared bank — waiting on owner

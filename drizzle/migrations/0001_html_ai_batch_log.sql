@@ -1,0 +1,10 @@
+CREATE TABLE public.html_ai_jobs (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), owner_id uuid NOT NULL, status text NOT NULL, difficulty text NOT NULL, requested integer NOT NULL, accepted integer NOT NULL DEFAULT 0, rejected integer NOT NULL DEFAULT 0, duplicates integer NOT NULL DEFAULT 0, message text NOT NULL DEFAULT '', created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT, INSERT ON public.html_ai_jobs TO authenticated; GRANT ALL ON public.html_ai_jobs TO service_role;
+ALTER TABLE public.html_ai_jobs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY ai_jobs_owner ON public.html_ai_jobs FOR ALL TO authenticated USING (auth.uid()=owner_id) WITH CHECK (auth.uid()=owner_id);
+CREATE TABLE public.html_ai_state (owner_id uuid PRIMARY KEY, blocked boolean NOT NULL DEFAULT false, message text NOT NULL DEFAULT '', status integer NOT NULL DEFAULT 0);
+GRANT SELECT, INSERT, UPDATE ON public.html_ai_state TO authenticated; GRANT ALL ON public.html_ai_state TO service_role;
+ALTER TABLE public.html_ai_state ENABLE ROW LEVEL SECURITY;
+CREATE POLICY ai_state_read ON public.html_ai_state FOR SELECT TO authenticated USING(auth.uid()=owner_id);
+CREATE POLICY ai_state_insert ON public.html_ai_state FOR INSERT TO authenticated WITH CHECK(auth.uid()=owner_id);
+CREATE POLICY ai_state_update ON public.html_ai_state FOR UPDATE TO authenticated USING(auth.uid()=owner_id) WITH CHECK(auth.uid()=owner_id);

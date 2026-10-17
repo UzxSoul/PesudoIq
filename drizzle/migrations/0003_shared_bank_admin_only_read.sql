@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS questions_owner_read ON public.html_questions;
