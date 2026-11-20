@@ -1,4 +1,4 @@
-# Footer Pro Credits
+#PesudoIQ
 
 16. DEVELOPER CREDIT — FOOTER
 
@@ -28,15 +28,8 @@ Do not add fake social links or unnecessary icons.
 
 Preserve the exact spelling: Rounak Kumar Lakhara.
 
-This project was built with [Lovable](https://lovable.dev).
 
-## Build with Lovable
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/91077fd0-4940-4847-ab2c-ab0d62a1e91e).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
